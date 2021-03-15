@@ -82,7 +82,7 @@ total 24
 
 There are two ways to run Byteman.
 
-1. Start Example with Byteman as javaagent
+#### 1. Start Example with Byteman as javaagent
 
 ```bash
 java -javaagent:./byteman-download-4.0.14/lib/byteman.jar=script:rules/throw.btm  -jar ./example.helloworld/Main.jar
@@ -98,7 +98,7 @@ Got an exception!java.io.IOException: BOOM
 
 You can change the `throw.btm` to `return.btm` or `trace.btm` to see the output.
 
-2. Attach Byteman
+#### 2. Attach Byteman
 
 Using this way can modify the bytecode of an existing Java process.
 
