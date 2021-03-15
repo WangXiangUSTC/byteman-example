@@ -1,0 +1,8 @@
+RULE throw an exception at sayhello
+CLASS Main 
+METHOD sayhello
+AT ENTRY 
+IF true 
+DO
+    throw new java.io.IOException("BOOM");
+ENDRULE

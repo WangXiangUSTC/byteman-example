@@ -1,0 +1,8 @@
+RULE trace sayhello
+CLASS Main 
+METHOD sayhello
+AT ENTRY 
+IF true 
+DO
+    traceln("hello byteman")
+ENDRULE

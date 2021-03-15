@@ -1,47 +1,94 @@
 # byteman-example
 
-## build example
+This repo shows how to use Byteman. [Byteman](https://byteman.jboss.org/) is a tool which makes it easy to trace, monitor and test the behaviour of Java application and JDK runtime code, and it can be used for injecting fault to Java application in Chaos Engineering.
+
+
+## Install Byteman
+
+Download binary and document:
+
+```bash
+wget https://downloads.jboss.org/byteman/4.0.14/byteman-download-4.0.14-bin.zip
+```
+
+Uncompress the zip file:
+
+```bash
+unzip byteman-download-4.0.14-bin.zip
+```
+
+Set the environment variable:
+
+```bash
+export BYTEMAN_HOME=`pwd`/byteman-download-4.0.14
+export PATH=$PATH:${BYTEMAN_HOME}/bin
+```
+
+## Build example Java application
+
+Enter into the directory of example:
 
 ```bash
 cd example.helloworld
 ```
 
+Build the Java code:
 ```bash
 javac HelloWorld/Main.java
-```
-
-```bash
 jar cfme Main.jar Manifest.txt HelloWorld.Main HelloWorld/Main.class
 ```
+
+You can run the application by executing the command below:
 
 ```bash
 java -jar Main.jar
 ```
 
+The output looks like:
+
 ```log
-Hello World
+0. Hello World
+1. Hello World
 ...
 ```
 
-## Download byteman
+Exit this directory:
 
-https://byteman.jboss.org/downloads.html
+```bash
+cd ...
+```
 
-wget https://downloads.jboss.org/byteman/4.0.14/byteman-download-4.0.14-bin.zip
+## Using Byteman
 
-export BYTEMAN_HOME=/Users/xiang/newWorld/gopath/src/github.com/chaos-mesh/byte-monkey-example/byteman-download-4.0.14
-export PATH=$PATH:${BYTEMAN_HOME}/bin
+### Prepare Byteman script
 
+You can see there are three files under directory `rules`:
 
-## Using byteman
+```bash
+$ ls -l rules 
+total 24
+-rw-r--r--  1 xiang  staff  100  3 15 17:09 return.btm
+-rw-r--r--  1 xiang  staff  137  3 15 17:09 throw.btm
+-rw-r--r--  1 xiang  staff  107  3 15 17:10 trace.btm
+```
 
-### Prepare btm config
+`return.btm` modifies the return value of function `getnum`.
 
+`throw.btm` throw an exception for function `sayhello`.
 
+`trace.btm` prints a trace log for function `sayhello`.
 
-### Start Example with byteman as javaagent
+### Run Byteman
 
-java -javaagent:./byteman-download-4.0.14/lib/byteman.jar=script:throw.btm  -jar ./example.helloworld/Main.jar
+There are two ways to run Byteman.
+
+1. Start Example with Byteman as javaagent
+
+```bash
+java -javaagent:./byteman-download-4.0.14/lib/byteman.jar=script:rules/throw.btm  -jar ./example.helloworld/Main.jar
+```
+
+The output looks like this:
 
 ```log
 Got an exception!java.io.IOException: BOOM
@@ -49,13 +96,33 @@ Got an exception!java.io.IOException: BOOM
 Got an exception!java.io.IOException: BOOM
 ```
 
+You can change the `throw.btm` to `return.btm` or `trace.btm` to see the output.
 
-### Attach byteman
+2. Attach Byteman
 
-bminstall.sh -b -Dorg.jboss.byteman.transform.all -Dorg.jboss.byteman.verbose 85937
+Using this way can modify the bytecode of an existing Java process.
 
+First, you need to run the example Java application:
 
-bmsubmit.sh -l throw.btm
+```bash
+java -jar ./example.helloworld/Main.jar
+```
+
+Then get the PID of the process.
+
+Attach Byteman into JVM:
+
+```bash
+bminstall.sh -b -Dorg.jboss.byteman.transform.all -Dorg.jboss.byteman.verbose ${PID}
+```
+
+Install rules:
+
+```bash
+bmsubmit.sh -l rules/throw.btm
+```
+
+The output looks like this:
 
 ```log
 Hello World
@@ -76,4 +143,9 @@ Got an exception!java.io.IOException: BOOM
 Rule.execute called for throw an exception at sayhello_0:0
 ```
 
-bmsubmit.sh -u throw.btm
+Uninstall rules:
+```bash
+bmsubmit.sh -u rules/throw.btm
+```
+
+You can change the `throw.btm` to `return.btm` or `trace.btm` to see the output.

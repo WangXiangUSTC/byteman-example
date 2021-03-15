@@ -1,0 +1,8 @@
+RULE modify return value
+CLASS Main 
+METHOD getnum
+AT ENTRY 
+IF true 
+DO
+    return 9999   
+ENDRULE
