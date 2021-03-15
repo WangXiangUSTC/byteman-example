@@ -1,4 +1,4 @@
-# byte-monkey-example
+# byteman-example
 
 ## build example
 
