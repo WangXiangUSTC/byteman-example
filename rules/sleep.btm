@@ -1,8 +1,8 @@
-RULE trace sayhello
+RULE add sleep for sayhello
 CLASS Main
 METHOD sayhello
 AT ENTRY
 IF true
 DO
-    traceln("hello byteman")
+    Thread.sleep(5000);
 ENDRULE

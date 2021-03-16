@@ -70,6 +70,7 @@ total 24
 -rw-r--r--  1 xiang  staff  100  3 15 17:09 return.btm
 -rw-r--r--  1 xiang  staff  137  3 15 17:09 throw.btm
 -rw-r--r--  1 xiang  staff  107  3 15 17:10 trace.btm
+-rw-r--r--  1 xiang  staff  107  3 15 17:10 sleep.btm
 ```
 
 `return.btm` modifies the return value of function `getnum`.
@@ -77,6 +78,8 @@ total 24
 `throw.btm` throw an exception for function `sayhello`.
 
 `trace.btm` prints a trace log for function `sayhello`.
+
+`sleep.btm` add sleep for function `sayhello`.
 
 ### Run Byteman
 
@@ -96,7 +99,7 @@ Got an exception!java.io.IOException: BOOM
 Got an exception!java.io.IOException: BOOM
 ```
 
-You can change the `throw.btm` to `return.btm` or `trace.btm` to see the output.
+You can change the `throw.btm` to `return.btm`, `sleep.btm` or `trace.btm` to see the output.
 
 #### 2. Attach Byteman
 
@@ -148,4 +151,4 @@ Uninstall rules:
 bmsubmit.sh -u rules/throw.btm
 ```
 
-You can change the `throw.btm` to `return.btm` or `trace.btm` to see the output.
+You can change the `throw.btm` to `return.btm`, `sleep.btm` or `trace.btm` to see the output.

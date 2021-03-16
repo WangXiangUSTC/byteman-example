@@ -1,8 +1,8 @@
 RULE modify return value
-CLASS Main 
+CLASS Main
 METHOD getnum
-AT ENTRY 
-IF true 
+AT ENTRY
+IF true
 DO
-    return 9999   
+    return 9999
 ENDRULE
