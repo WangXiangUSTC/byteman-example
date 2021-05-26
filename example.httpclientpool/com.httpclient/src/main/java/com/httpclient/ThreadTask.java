@@ -15,15 +15,5 @@ public class ThreadTask implements Runnable{
         System.out.println("app thread: " + Thread.currentThread().getName());
         ResponseEntity<String> response = restTemplate.getForEntity("http://127.0.0.1:8090/hello", String.class);
         System.out.println(response);
-        /*
-        if (interval > 0) {
-            try {
-                Thread.sleep(interval);
-            } catch(Exception e) {
-                System.out.println("get exception when execute new thread:" + e);
-                return;        
-            }
-        }
-        */
     }
 }
