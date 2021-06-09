@@ -1,0 +1,9 @@
+RULE trace sayhello
+CLASS Main
+METHOD getInfo
+AT EXIT
+BIND info:Info=$!
+IF true
+DO
+   info.setMessage("Hello Chaos");
+ENDRULE
