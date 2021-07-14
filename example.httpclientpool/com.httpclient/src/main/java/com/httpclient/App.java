@@ -22,16 +22,27 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import bsh.Interpreter;
+
 
 public class App {
     public static void main(String[] args) throws IOException, URISyntaxException {
+        try {
+            Interpreter i = new Interpreter();  // Construct an interpreter
+            //i.set("foo", 5);                    // Set variables
+            i.eval("int foo = 5;");
+            i.eval("System.out.println(foo);");
+        } catch(Exception e) {
+            System.out.println("get exception:" + e);
+        }
+        
         example();
     }
 
     public static void example() throws URISyntaxException, IOException {
         PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
-        cm.setMaxTotal(1);
-        cm.setDefaultMaxPerRoute(1);
+        cm.setMaxTotal(100);
+        cm.setDefaultMaxPerRoute(100);
 
         RequestConfig requestConfig = RequestConfig.custom().setConnectionRequestTimeout(5000).setConnectTimeout(5000).build();
 
@@ -43,7 +54,7 @@ public class App {
         RestTemplate restTemplate = new RestTemplate(requestFactory);
         restTemplate.getMessageConverters().add(new StringHttpMessageConverter());
 
-        for(int i=0;i<1000;i++) {
+        for(int i=0;i<100;i++) {
             try {
                 ThreadTask task = new ThreadTask(restTemplate);
                 task.run();
