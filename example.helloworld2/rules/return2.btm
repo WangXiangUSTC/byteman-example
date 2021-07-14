@@ -1,0 +1,10 @@
+RULE modify return value
+CLASS Main
+METHOD getInfo
+AT EXIT
+BIND info:Info=$!;
+     tm:java.time.LocalDateTime=java.time.LocalDateTime.of(2017, 2, 13, 15, 56);
+IF true
+DO
+   info.setTime(tm);
+ENDRULE
