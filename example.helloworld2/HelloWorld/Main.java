@@ -19,8 +19,7 @@ public class Main {
     }
 
     public static Info getInfo(int num) throws Exception {
-        try {
-            LocalDateTime a = LocalDateTime.of(2017, 2, 13, 15, 56);    
+        try {   
             Info info = new Info(num, LocalDateTime.now(), "Hello World");
             return info;
         } catch (Exception e) {
