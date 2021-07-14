@@ -1,0 +1,11 @@
+RULE return new info
+CLASS Main
+METHOD getInfo
+AT EXIT
+BIND 
+     tm:java.time.LocalDateTime=java.time.LocalDateTime.of(2017, 2, 13, 15, 56);
+     info:Info=new Info(9999, tm, "Hello Chaos");
+IF true
+DO
+   return info
+ENDRULE
