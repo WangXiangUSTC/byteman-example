@@ -1,0 +1,9 @@
+RULE modify return value
+CLASS Main
+METHOD getnum
+AT ENTRY
+BIND flag:boolean=($1%2 == 0)
+IF flag
+DO
+    return 9999
+ENDRULE
