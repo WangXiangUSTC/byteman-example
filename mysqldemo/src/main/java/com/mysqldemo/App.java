@@ -16,26 +16,62 @@ import com.sun.net.httpserver.HttpServer;
 
 public class App 
 {
-    // for MySQL 8.0 below
-    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
-    static final String DB_URL = "jdbc:mysql://localhost:3306/test";
- 
-    // for MySQL 8.0 above
-    //static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";  
-    //static final String DB_URL = "jdbc:mysql://localhost:3306/test?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
- 
-    // user and password 
-    static final String USER = "root";
-    static final String PASS = "123456";
+    static String jdbcDriver;
+    static String dsn;
+    
+    // MySQL user and password
+    static String user;
+    static String password;
 
     public static void main( String[] args) throws Exception
     {
+        System.out.println("Server start!");
+        App.setConfig();
         HttpServer server = HttpServer.create(new InetSocketAddress(8001), 0);
-        server.createContext("/query", new TestHandler());
+        server.createContext("/query", new QueryHandler());
         server.start();
     }
 
-    static class TestHandler implements HttpHandler{
+    // setConfig set the config from environment variables, or use default value.
+    public static void setConfig() {
+        String mysqlDSN = System.getenv("MYSQL_DSN");
+        String mysqlUser = System.getenv("MYSQL_USER");
+        String mysqlPassword = System.getenv("MYSQL_PASSWORD");
+        String mysqlConnectorVersion = System.getenv("MYSQL_CONNECTOR_VERSION");
+
+        if (mysqlDSN == null || mysqlDSN == "") {
+            App.dsn = "jdbc:mysql://localhost:3306/test";
+        } else {
+            App.dsn = mysqlDSN;
+        }
+
+        if (mysqlUser == null || mysqlUser == "") {
+            App.user = "root";
+        } else {
+            App.user = mysqlUser;
+        }
+
+        if (mysqlPassword == null || mysqlPassword == "") {
+            App.password = "123456";
+        } else {
+            App.password = mysqlPassword;
+        }
+
+        if (mysqlConnectorVersion == null || mysqlConnectorVersion == "") {
+            // default mysql connector version is 8
+            App.jdbcDriver = "com.mysql.cj.jdbc.Driver"; 
+        } else {
+            if (mysqlConnectorVersion == "8") {
+                App.jdbcDriver = "com.mysql.cj.jdbc.Driver";
+            } else if (mysqlConnectorVersion == "5") {
+                App.jdbcDriver = "com.mysql.jdbc.Driver";
+            }
+        }  
+    }
+
+    // QueryHandler will handle the HTTP request, get the query SQL and then execute it, 
+    // finially write the result to HTTP response
+    static class QueryHandler implements HttpHandler{
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             Connection conn = null;
@@ -43,26 +79,33 @@ public class App
             String response = "";
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
+            long start = System.currentTimeMillis();
             try{
                 String queryString = exchange.getRequestURI().getQuery();
                 Map<String,String> queryStringInfo = formData2Dic(queryString);
                 String sql = queryStringInfo.get("sql");
-                System.out.println("sql: " + sql);
+                System.out.println("Query sql: " + sql);
 
-                Class.forName(JDBC_DRIVER);
-                conn = DriverManager.getConnection(DB_URL,USER,PASS);
+                Class.forName(jdbcDriver);
+                conn = DriverManager.getConnection(dsn, user, password);
                 stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(sql);
-        
+
                 ResultSetMetaData metadata = rs.getMetaData();
-                int columnCount = metadata.getColumnCount();    
+                int columnCount = metadata.getColumnCount();
                 for (int i = 1; i <= columnCount; i++) {
-                    response += metadata.getColumnName(i) + ", ";
+                    response += metadata.getColumnName(i);
+                    if (i != columnCount) {
+                        response += ", ";
+                    }
                 }
                 response += "\n";
                 while(rs.next()){   
                     for (int i = 1; i <= columnCount; i++) {
-                        response += rs.getString(i) + ", ";          
+                        response += rs.getString(i);
+                        if (i != columnCount) {
+                            response += ", ";
+                        }
                     }
                     response += "\n";
                 }
@@ -83,6 +126,9 @@ public class App
                     se.printStackTrace();
                 }
             }
+            long end = System.currentTimeMillis( );
+            long diff = end - start;
+            response += "Elapsed time: " + Long.toString(diff) + "(ms)";
             System.out.println("Finish query!");
 
             exchange.sendResponseHeaders(200, 0);
