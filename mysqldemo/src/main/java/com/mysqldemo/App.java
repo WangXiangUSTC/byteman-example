@@ -79,7 +79,7 @@ public class App
             String response = "";
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
-            long start = System.currentTimeMillis();
+
             try{
                 String queryString = exchange.getRequestURI().getQuery();
                 Map<String,String> queryStringInfo = formData2Dic(queryString);
@@ -89,26 +89,7 @@ public class App
                 Class.forName(jdbcDriver);
                 conn = DriverManager.getConnection(dsn, user, password);
                 stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(sql);
-
-                ResultSetMetaData metadata = rs.getMetaData();
-                int columnCount = metadata.getColumnCount();
-                for (int i = 1; i <= columnCount; i++) {
-                    response += metadata.getColumnName(i);
-                    if (i != columnCount) {
-                        response += ", ";
-                    }
-                }
-                response += "\n";
-                while(rs.next()){   
-                    for (int i = 1; i <= columnCount; i++) {
-                        response += rs.getString(i);
-                        if (i != columnCount) {
-                            response += ", ";
-                        }
-                    }
-                    response += "\n";
-                }
+                response += App.querySQL(stmt, sql) + "\n";
             } catch(SQLException se) {
                 se.printStackTrace(pw);
                 response += sw.toString() + "\n";
@@ -126,16 +107,43 @@ public class App
                     se.printStackTrace();
                 }
             }
-            long end = System.currentTimeMillis( );
-            long diff = end - start;
-            response += "Elapsed time: " + Long.toString(diff) + "(ms)";
             System.out.println("Finish query!");
-
             exchange.sendResponseHeaders(200, 0);
             OutputStream os = exchange.getResponseBody();
             os.write(response.getBytes());
             os.close();
         }
+    }
+
+    // querySQL executes the sql, and return the result
+    public static String querySQL(Statement stmt, String sql) throws SQLException {
+        String result = "";
+        long start = System.currentTimeMillis();
+        ResultSet rs = stmt.executeQuery(sql);
+
+        ResultSetMetaData metadata = rs.getMetaData();
+        int columnCount = metadata.getColumnCount();
+        for (int i = 1; i <= columnCount; i++) {
+            result += metadata.getColumnName(i);
+            if (i != columnCount) {
+                result += ", ";
+            }
+        }
+        result += "\n";
+        while(rs.next()){
+            for (int i = 1; i <= columnCount; i++) {
+                result += rs.getString(i);
+                if (i != columnCount) {
+                    result += ", ";
+                }
+            }
+            result += "\n";
+        }
+        long end = System.currentTimeMillis( );
+        long diff = end - start;
+        result += "Elapsed time: " + Long.toString(diff) + "(ms)";
+
+        return result;
     }
 
     public static Map<String,String> formData2Dic(String formData ) {

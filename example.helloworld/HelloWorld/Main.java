@@ -19,7 +19,7 @@ public class Main {
 
             System.out.println(s + ". Hello World");
         } catch (Exception e) { 
-            throw e ;
+            throw e;
         }
     }
 
