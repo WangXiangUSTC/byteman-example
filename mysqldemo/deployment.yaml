@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: mysql-query
-        image: localhost:5000/pingcap/mysqldemo:1.0
+        image: xiang13225080/mysqldemo:1.1
         imagePullPolicy: IfNotPresent
         env:
         - name: MYSQL_DSN
