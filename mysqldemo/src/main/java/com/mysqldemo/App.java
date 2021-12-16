@@ -66,7 +66,7 @@ public class App
             } else if (mysqlConnectorVersion == "5") {
                 App.jdbcDriver = "com.mysql.jdbc.Driver";
             }
-        }  
+        }
     }
 
     // QueryHandler will handle the HTTP request, get the query SQL and then execute it, 
@@ -76,7 +76,8 @@ public class App
         public void handle(HttpExchange exchange) throws IOException {
             Connection conn = null;
             Statement stmt = null;
-            String response = "";
+            String exception = null;
+            String queryResult = null;
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
 
@@ -89,13 +90,13 @@ public class App
                 Class.forName(jdbcDriver);
                 conn = DriverManager.getConnection(dsn, user, password);
                 stmt = conn.createStatement();
-                response += App.querySQL(stmt, sql) + "\n";
+                queryResult = App.querySQL(stmt, sql) + "\n";
             } catch(SQLException se) {
                 se.printStackTrace(pw);
-                response += sw.toString() + "\n";
+                exception = sw.toString() + "\n";
             } catch(Exception e) {
                 e.printStackTrace(pw);
-                response += sw.toString() + "\n";
+                exception = sw.toString() + "\n";
             } finally {
                 try {
                     if(stmt!=null) stmt.close();
@@ -107,10 +108,16 @@ public class App
                     se.printStackTrace();
                 }
             }
+
             System.out.println("Finish query!");
             exchange.sendResponseHeaders(200, 0);
             OutputStream os = exchange.getResponseBody();
-            os.write(response.getBytes());
+            if (queryResult.length() > 0) {
+                os.write(queryResult.getBytes());
+            } else {
+                os.write(exception.getBytes());
+            }
+
             os.close();
         }
     }
@@ -141,12 +148,12 @@ public class App
         }
         long end = System.currentTimeMillis( );
         long diff = end - start;
-        result += "Elapsed time: " + Long.toString(diff) + "(ms)";
+        result += "Elapsed time: " + Long.toString(diff) + "(ms)\n";
 
         return result;
     }
 
-    public static Map<String,String> formData2Dic(String formData ) {
+    public static Map<String,String> formData2Dic(String formData) {
         Map<String,String> result = new HashMap<>();
         if(formData== null || formData.trim().length() == 0) {
             return result;
