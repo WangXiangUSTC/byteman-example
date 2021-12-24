@@ -1,0 +1,12 @@
+RULE return new info
+CLASS Info
+METHOD getList
+AT EXIT
+BIND list:List=$!;
+IF true
+DO
+    list.remove("apple");
+    list.add("apple2");
+    list.add("pear2");
+    return list
+ENDRULE

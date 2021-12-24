@@ -27,6 +27,14 @@ public class Info {
     }
 
     public String Str() {
-        return this.num + ". " + this.time + " " + this.message;
+        List<String> list = this.getList();
+        return this.num + ". " + this.time + " " + this.message + ", " + list.toString();
+    }
+
+    public List<String> getList() {
+        List<String> list = new ArrayList<>();
+        list.add("apple");
+        list.add("pear");
+        return list;
     }
 }

@@ -1,0 +1,11 @@
+RULE return new info
+CLASS Info
+METHOD getList
+AT EXIT
+BIND list:List=new java.util.ArrayList();
+IF true
+DO
+    list.add("apple2");
+    list.add("pear2");
+    return list
+ENDRULE
