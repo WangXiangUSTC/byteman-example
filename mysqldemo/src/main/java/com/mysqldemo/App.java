@@ -39,31 +39,31 @@ public class App
         String mysqlPassword = System.getenv("MYSQL_PASSWORD");
         String mysqlConnectorVersion = System.getenv("MYSQL_CONNECTOR_VERSION");
 
-        if (mysqlDSN == null || mysqlDSN == "") {
+        if (mysqlDSN == null || mysqlDSN.equals("")) {
             App.dsn = "jdbc:mysql://localhost:3306/test";
         } else {
             App.dsn = mysqlDSN;
         }
 
-        if (mysqlUser == null || mysqlUser == "") {
+        if (mysqlUser == null || mysqlUser.equals("")) {
             App.user = "root";
         } else {
             App.user = mysqlUser;
         }
 
-        if (mysqlPassword == null || mysqlPassword == "") {
+        if (mysqlPassword == null || mysqlPassword.equals("")) {
             App.password = "123456";
         } else {
             App.password = mysqlPassword;
         }
 
-        if (mysqlConnectorVersion == null || mysqlConnectorVersion == "") {
+        if (mysqlConnectorVersion == null || mysqlConnectorVersion.equals("")) {
             // default mysql connector version is 8
             App.jdbcDriver = "com.mysql.cj.jdbc.Driver"; 
         } else {
-            if (mysqlConnectorVersion == "8") {
+            if (mysqlConnectorVersion.equals("8")) {
                 App.jdbcDriver = "com.mysql.cj.jdbc.Driver";
-            } else if (mysqlConnectorVersion == "5") {
+            } else if (mysqlConnectorVersion.equals("5")) {
                 App.jdbcDriver = "com.mysql.jdbc.Driver";
             }
         }  
@@ -86,7 +86,7 @@ public class App
                 String sql = queryStringInfo.get("sql");
                 System.out.println("Query sql: " + sql);
 
-                Class.forName(jdbcDriver);
+                Class.forName(App.jdbcDriver);
                 conn = DriverManager.getConnection(dsn, user, password);
                 stmt = conn.createStatement();
                 response += App.querySQL(stmt, sql) + "\n";
