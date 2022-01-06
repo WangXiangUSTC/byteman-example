@@ -1,0 +1,11 @@
+RULE mysql test
+CLASS com.mysql.jdbc.MysqlIO
+METHOD sqlQueryDirect
+HELPER org.chaos_mesh.byteman.helper.SQLHelper
+AT ENTRY
+BIND
+    flag:boolean=matchDBTable($10, $2, "chaos", "website", "select");
+IF flag
+DO
+    throw new java.sql.SQLException("BOOM");
+ENDRULE
