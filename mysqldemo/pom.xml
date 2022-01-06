@@ -17,7 +17,7 @@
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
-      <version>8.0.27</version>
+      <version>8.0.27</version>  <!-- version can be 5.0.8, 5.1.49, 8.0.27 -->
     </dependency>
     <dependency>
       <groupId>com.github.jsqlparser</groupId>

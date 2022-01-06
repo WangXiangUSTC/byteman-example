@@ -1,0 +1,11 @@
+RULE mysql test2
+CLASS com.mysql.cj.NativeSession
+METHOD execSQL
+HELPER org.chaos_mesh.byteman.helper.SQLHelper
+AT ENTRY
+BIND
+     flag:boolean=matchDBTable("", $2, "test", "t1", "select");
+IF flag
+DO
+        throw new com.mysql.cj.exceptions.CJException("BOOM");
+ENDRULE
