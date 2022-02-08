@@ -51,9 +51,7 @@ public class App
             App.user = mysqlUser;
         }
 
-        if (mysqlPassword == null || mysqlPassword.equals("")) {
-            App.password = "123456";
-        } else {
+        if (mysqlPassword != null && mysqlPassword.length() != 0) {
             App.password = mysqlPassword;
         }
 
@@ -87,6 +85,11 @@ public class App
                 System.out.println("Query sql: " + sql);
 
                 Class.forName(App.jdbcDriver);
+                if (password == null || password.length() == 0 ) {
+                    conn = DriverManager.getConnection(dsn, user, null);
+                } else {
+                    conn = DriverManager.getConnection(dsn, user, password);
+                }
                 conn = DriverManager.getConnection(dsn, user, password);
                 stmt = conn.createStatement();
                 response += App.querySQL(stmt, sql) + "\n";
