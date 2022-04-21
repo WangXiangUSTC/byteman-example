@@ -23,22 +23,11 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.channels.spi.SelectorProvider;
-
-import bsh.Interpreter;
 import java.util.Date;
 
 
 public class App {
     public static void main(String[] args) throws IOException, URISyntaxException {
-        try {
-            Interpreter i = new Interpreter();  // Construct an interpreter
-            //i.set("foo", 5);                    // Set variables
-            i.eval("int foo = 5;");
-            i.eval("System.out.println(foo);");
-        } catch(Exception e) {
-            System.out.println("get exception:" + e);
-        }
-        
         example();
     }
 
