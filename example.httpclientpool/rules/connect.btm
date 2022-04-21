@@ -1,0 +1,8 @@
+RULE http connect test
+CLASS org.apache.http.impl.conn.PoolingHttpClientConnectionManager
+METHOD leaseConnection
+AT ENTRY
+IF true
+DO
+    throw new org.apache.http.conn.ConnectionPoolTimeoutException("BOOM");
+ENDRULE
